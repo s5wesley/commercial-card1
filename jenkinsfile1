@@ -1,0 +1,15 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Example') {
+            steps {
+            sh '''
+               env | grep -e JAVA_home
+               which java
+               java -version
+           '''  
+           }
+        }  
+    }
+}
