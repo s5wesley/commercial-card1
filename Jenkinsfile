@@ -2,6 +2,12 @@ pipeline {
     agent any
 
     stages {
+        stage('clean workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        
         stage('Checkout') {
             steps {
                 git credentialsId: 'github-token', url: 'https://github.com/s5wesley/commercial-card1.git'
