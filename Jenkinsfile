@@ -27,6 +27,14 @@ pipeline {
                 }
             }
         }
+        stage('Package') {
+            steps {
+                script {
+                    // Package the application
+                    sh 'mvn clean package -DskipTests=true'
+                }
+            }
+        }
 
         stage('Testing') {
             steps {
@@ -36,19 +44,11 @@ pipeline {
                 }
             }
         }
-        stage('Package') {
-            steps {
-                script {
-                    // Package the application
-                    sh 'mvn package'
-                }
-            }
-        }
     }
     
-    post {
-        always {
-            junit 'target/surefire-reports/*.xml'
-        }
-    }
+    // post {
+    //     always {
+    //         junit 'target/surefire-reports/*.xml'
+    //     }
+    // }
 }
