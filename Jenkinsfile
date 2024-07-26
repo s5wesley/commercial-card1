@@ -10,8 +10,8 @@ pipeline {
         
         stage('Checkout') {
             steps {
-                withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
-                    sh 'git clone https://$GITHUB_TOKEN@github.com/s5wesley/commercial-card1.git'
+                withCredentials([string(credentialsId: 'Github', variable: 'GITHUB')]) {
+                    sh 'git clone https://$GITHUB@github.com/s5wesley/commercial-card1.git'
                 }
             }
         }
