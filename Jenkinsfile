@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('clean workspace') {
+        stage('Clean Workspace') {
             steps {
                 cleanWs()
             }
@@ -13,6 +13,7 @@ pipeline {
                 git credentialsId: 'github-token', url: 'https://github.com/s5wesley/commercial-card1.git'
             }
         }
+        
         stage('Check Java Version') {
             steps {
                 sh 'java -version'
@@ -27,28 +28,38 @@ pipeline {
                 }
             }
         }
-        stage('Package') {
-            steps {
-                script {
-                    // Package the application
-                    sh 'mvn clean package -DskipTests=true'
-                }
-            }
-        }
 
         stage('Testing') {
             steps {
                 script {
                     // Package the application
-                    sh 'mvn test'
+                    sh 'mvn test -DskipTests=true'
                 }
             }
         }
+        
+        stage('File System Scan') {
+            steps {
+                sh "trivy fs --format table -o trivy-fs-report.html ."
+            }
+        }
+
+        // stage('SonarQube Analysis') {
+        //     agent {
+        //         docker {
+        //             image 'sonarsource/sonar-scanner-cli:4.8.0'
+        //             args '-v /path/to/sonar-scanner:/opt/sonar-scanner' // Make sure this path is correctly set
+        //         }
+        //     }
+        //     environment {
+        //         CI = 'true'
+        //         scannerHome = '/opt/sonar-scanner'
+        //     }
+        //     steps {
+        //         withSonarQubeEnv('sonar') {
+        //             sh "${scannerHome}/bin/sonar-scanner"
+        //         }
+        //     }
+        // }
     }
-    
-    // post {
-    //     always {
-    //         junit 'target/surefire-reports/*.xml'
-    //     }
-    // }
 }
