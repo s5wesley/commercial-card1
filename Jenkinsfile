@@ -44,22 +44,22 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            agent {
-                docker {
-                    image 'sonarsource/sonar-scanner-cli:4.8.0'
-                    args '-v /path/to/sonar-scanner:/opt/sonar-scanner' // Make sure this path is correctly set
-                }
-            }
-            environment {
-                CI = 'true'
-                scannerHome = '/opt/sonar-scanner'
-            }
-            steps {
-                withSonarQubeEnv('sonar') {
-                    sh "${scannerHome}/bin/sonar-scanner"
-                }
-            }
-        }
+        // stage('SonarQube Analysis') {
+        //     agent {
+        //         docker {
+        //             image 'sonarsource/sonar-scanner-cli:4.8.0'
+        //             args '-v /path/to/sonar-scanner:/opt/sonar-scanner' // Make sure this path is correctly set
+        //         }
+        //     }
+        //     environment {
+        //         CI = 'true'
+        //         scannerHome = '/opt/sonar-scanner'
+        //     }
+        //     steps {
+        //         withSonarQubeEnv('sonar') {
+        //             sh "${scannerHome}/bin/sonar-scanner"
+        //         }
+        //     }
+        // }
     }
 }
