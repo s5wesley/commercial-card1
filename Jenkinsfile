@@ -1,13 +1,9 @@
 pipeline {
-    agent {
-        docker {
-            image 'jenkins/inbound-agent:latest'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
-        }
-    }
-    environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-cred')
-    }
+    agent any
+     environment {
+		DOCKERHUB_CREDENTIALS=credentials('dockerhub-cred')
+	}
+
     stages {
         stage('Clean Workspace') {
             steps {
@@ -77,19 +73,20 @@ pipeline {
         stage('Build-images') {
             steps {
                 sh '''
-                    docker build -t bulawesley/card-svc:v$BUILD_NUMBER .
+                    docker build -t  bulawesley/card-svc:v$BUILD_NUMBER .
                 '''
             }
         }
         stage('Docker Image Scan') {
             steps {
-                sh "trivy image --format table -o trivy-image-report.html bulawesley/card-svc:v$BUILD_NUMBER"
+                sh "trivy image --format table -o trivy-image-report.html bulawesley/card-svc:v$BUILD_NUMBER "
             }
         }
         stage('Push-ui') {
+          
             steps {
-               sh 'docker push bulawesley/card-svc:v$BUILD_NUMBER'
+               sh ' docker push bulawesley/card-svc:v$BUILD_NUMBER'
             }
-        }
+        }   
     }
 }
