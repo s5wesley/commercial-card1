@@ -1,9 +1,10 @@
 pipeline {
-    agent any
-     environment {
-		DOCKERHUB_CREDENTIALS=credentials('dockerhub-cred')
-	}
-
+    agent {
+        label 'dynamic-docker-agent' // Updated label for your EC2 dynamic agents
+    }
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-cred')
+    }
     stages {
         stage('Clean Workspace') {
             steps {
@@ -26,7 +27,6 @@ pipeline {
         stage('Compile') {
             steps {
                 script {
-                    // Compile the Java source code
                     sh 'mvn clean compile'
                 }
             }
@@ -35,7 +35,6 @@ pipeline {
         stage('Testing') {
             steps {
                 script {
-                    // Package the application
                     sh 'mvn test -DskipTests=true'
                 }
             }
@@ -47,11 +46,12 @@ pipeline {
             }
         }
 
+        // Uncomment and adjust this stage if you have SonarQube configured
         // stage('SonarQube Analysis') {
         //     agent {
         //         docker {
         //             image 'sonarsource/sonar-scanner-cli:4.8.0'
-        //             args '-v /path/to/sonar-scanner:/opt/sonar-scanner' // Make sure this path is correctly set
+        //             args '-v /path/to/sonar-scanner:/opt/sonar-scanner'
         //         }
         //     }
         //     environment {
@@ -67,25 +67,27 @@ pipeline {
 
         stage('Build') {
             steps {
-               sh "mvn package -DskipTests=true"
+                sh "mvn package -DskipTests=true"
             }
         }
+
         stage('Build-images') {
             steps {
                 sh '''
-                    docker build -t  bulawesley/card-svc:v$BUILD_NUMBER .
+                    docker build -t bulawesley/card-svc:v$BUILD_NUMBER .
                 '''
             }
         }
+
         stage('Docker Image Scan') {
             steps {
-                sh "trivy image --format table -o trivy-image-report.html bulawesley/card-svc:v$BUILD_NUMBER "
+                sh "trivy image --format table -o trivy-image-report.html bulawesley/card-svc:v$BUILD_NUMBER"
             }
         }
+
         stage('Push-ui') {
-          
             steps {
-               sh ' docker push bulawesley/card-svc:v$BUILD_NUMBER'
+               sh 'docker push bulawesley/card-svc:v$BUILD_NUMBER'
             }
         }   
     }
