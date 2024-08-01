@@ -13,7 +13,7 @@ pipeline {
         
         stage('Checkout') {
             steps {
-               git credentialsId: 'github-cred', url: 'git@github.com:s5wesley/commercial-card1.git'
+               git 'https://github.com/s5wesley/commercial-card1.git'
             }
         }
         
