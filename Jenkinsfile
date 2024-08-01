@@ -2,7 +2,7 @@ pipeline {
     agent { label 'dynamic-docker-agent' } // Use the dynamic Docker agent
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('Docker-cred')
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-cred')
     }
 
     stages {
