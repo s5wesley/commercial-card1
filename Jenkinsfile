@@ -22,7 +22,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git branch: 'feature/wesley', credentialsId: 'github-credential', url: 'https://github.com/DEL-ORG/commercial-card.git'
+                git 'https://github.com/s5wesley/commercial-card1.git'
             }
         }
 
