@@ -1,5 +1,8 @@
 pipeline {
     agent any
+     environment {
+		DOCKERHUB_CREDENTIALS=credentials('dockerhub-cred')
+	}
 
     stages {
         stage('Clean Workspace') {
@@ -10,7 +13,7 @@ pipeline {
         
         stage('Checkout') {
             steps {
-                git credentialsId: 'github-token', url: 'https://github.com/s5wesley/commercial-card1.git'
+               git credentialsId: 'github-cred', url: 'git@github.com:s5wesley/commercial-card1.git'
             }
         }
         
@@ -61,5 +64,29 @@ pipeline {
         //         }
         //     }
         // }
+
+        stage('Build') {
+            steps {
+               sh "mvn package -DskipTests=true"
+            }
+        }
+        stage('Build-images') {
+            steps {
+                sh '''
+                    docker build -t  bulawesley/card-svc:v$BUILD_NUMBER .
+                '''
+            }
+        }
+        stage('Docker Image Scan') {
+            steps {
+                sh "trivy image --format table -o trivy-image-report.html bulawesley/card-svc:v$BUILD_NUMBER "
+            }
+        }
+        stage('Push-ui') {
+          
+            steps {
+               sh ' docker push bulawesley/card-svc:v$BUILD_NUMBER'
+            }
+        }   
     }
 }
