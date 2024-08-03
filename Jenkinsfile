@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'dynamic-docker-agent' } // Use the dynamic Docker agent
+    agent { label 'dynamic-ssh-agent' } // Use the dynamic Docker agent
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-cred')
