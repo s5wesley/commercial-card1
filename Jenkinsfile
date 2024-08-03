@@ -22,7 +22,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git 'https://github.com/s5wesley/commercial-card1.git'
+                git credentialsId: 'jenkins-ssh-agent', url: 'git@github.com:s5wesley/commercial-card1.git'
             }
         }
 
