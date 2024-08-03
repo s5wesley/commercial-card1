@@ -115,10 +115,16 @@ pipeline {
                     sh '''
                         docker run -d \
                         --name commercial-card-app \
-                        -p 8080:8080 \
+                        -p 4567:8080 \
                         bulawesley/card-svc:v$BUILD_NUMBER
                     '''
                 }
+            }
+        }
+
+        stage('Display Server IP') {
+            steps {
+                sh 'curl ifconfig.io'
             }
         }
     }
