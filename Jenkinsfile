@@ -110,7 +110,7 @@ pipeline {
                     sh '''
                         docker run -d \
                         --name commercial-card1 \
-                        -p 4569:8080 \
+                        -p 4567:8080 \
                         bulawesley/card-svc:v$BUILD_NUMBER
                     '''
                 }
@@ -132,12 +132,10 @@ pipeline {
                             image: bulawesley/card-svc
                         EOF
 
-                        git config --global user.name "s5wesley"
-                        git config --global user.email "info@s5wesley.com"
                         cat values.yaml
                         git add -A
                         git commit -m "Change from Jenkins build ${BUILD_NUMBER}"
-                        git push 
+                        git push https://github.com/s5wesley/commercial-card1.git
                     '''
                 }
             }
