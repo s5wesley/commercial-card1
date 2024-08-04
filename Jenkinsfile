@@ -18,7 +18,7 @@ pipeline {
                     docker system prune -fa || true
                 '''
             }
-        } 
+        }
 
         stage('Checkout') {
             steps {
@@ -34,9 +34,7 @@ pipeline {
 
         stage('Compile') {
             steps {
-                script {
-                    sh 'mvn clean compile'
-                }
+                sh 'mvn clean compile'
             }
         }
 
@@ -48,18 +46,17 @@ pipeline {
 
         stage('Testing') {
             steps {
-                script {
-                    sh 'mvn test -DskipTests=true'
-                }
-            }
-        }
-        
-        stage('File System Scan') {
-            steps {
-                sh "trivy fs --format table -o trivy-fs-report.html ."
+                sh 'mvn test -DskipTests=true'
             }
         }
 
+        stage('File System Scan') {
+            steps {
+                sh 'trivy fs --format table -o trivy-fs-report.html .'
+            }
+        }
+
+        // Uncomment and configure the following stage if you need SonarQube analysis
         // stage('SonarQube Analysis') {
         //     agent {
         //         docker {
@@ -80,21 +77,19 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh "mvn package -DskipTests=true"
+                sh 'mvn package -DskipTests=true'
             }
         }
 
         stage('Build-images') {
             steps {
-                sh '''
-                    docker build -t bulawesley/card-svc:v$BUILD_NUMBER .
-                '''
+                sh 'docker build -t bulawesley/card-svc:v$BUILD_NUMBER .'
             }
         }
 
         stage('Docker Image Scan') {
             steps {
-                sh "trivy image --format table -o trivy-image-report.html bulawesley/card-svc:v$BUILD_NUMBER"
+                sh 'trivy image --format table -o trivy-image-report.html bulawesley/card-svc:v$BUILD_NUMBER'
             }
         }
 
@@ -108,15 +103,41 @@ pipeline {
             steps {
                 script {
                     // Stop any running container with the same name
-                    sh 'docker stop commercial-card-app || true'
-                    sh 'docker rm commercial-card-app || true'
+                    sh 'docker stop commercial-card1 || true'
+                    sh 'docker rm commercial-card1 || true'
 
                     // Run the new container with the application
                     sh '''
                         docker run -d \
-                        --name commercial-card-app \
-                        -p 4567:8080 \
+                        --name commercial-card1 \
+                        -p 4569:8080 \
                         bulawesley/card-svc:v$BUILD_NUMBER
+                    '''
+                }
+            }
+        }
+
+        stage('helm-charts') {
+            steps {
+                script {
+                    sh '''
+                        rm -rf commercial-card1 || true
+                        git clone https://github.com/s5wesley/commercial-card1.git
+                        cd commercial-card1
+
+                        cat << EOF > values.yaml
+                        repository:
+                          tag:  v$BUILD_NUMBER
+                          assets:
+                            image: bulawesley/card-svc
+                        EOF
+
+                        git config --global user.name "s5wesley"
+                        git config --global user.email "info@s5wesley.com"
+                        cat values.yaml
+                        git add -A
+                        git commit -m "Change from Jenkins build ${BUILD_NUMBER}"
+                        git push https://github.com/s5wesley/commercial-card1.git
                     '''
                 }
             }
