@@ -137,7 +137,7 @@ pipeline {
                         cat values.yaml
                         git add -A
                         git commit -m "Change from Jenkins build ${BUILD_NUMBER}"
-                        git push https://github.com/s5wesley/commercial-card1.git
+                        git push 
                     '''
                 }
             }
