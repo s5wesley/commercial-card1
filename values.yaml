@@ -1,4 +1,0 @@
-repository:
-   tag:  v$BUILD_NUMBER
-   assets:
-    image: bulawesley/card-svc
