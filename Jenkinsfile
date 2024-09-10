@@ -55,25 +55,22 @@ pipeline {
                 sh 'trivy fs --format table -o trivy-fs-report.html .'
             }
         }
-
-        // Uncomment and configure the following stage if you need SonarQube analysis
-        // stage('SonarQube Analysis') {
-        //     agent {
-        //         docker {
-        //             image 'sonarsource/sonar-scanner-cli:4.8.0'
-        //             args '-v /path/to/sonar-scanner:/opt/sonar-scanner' // Make sure this path is correctly set
-        //         }
-        //     }
-        //     environment {                 
-        //         CI = 'true'
-        //         scannerHome = '/opt/sonar-scanner'
-        //     }
-        //     steps {
-        //         withSonarQubeEnv('sonar') {
-        //             sh "${scannerHome}/bin/sonar-scanner"
-        //         }
-        //     }
-        // }
+        stage('SonarQube analysis') {
+            agent {
+                docker {
+                    image 'sonarsource/sonar-scanner-cli:5.0.1'
+                }
+            }
+            environment {
+                CI = 'true'
+                scannerHome = '/opt/sonar-scanner'
+            }
+            steps {
+                withSonarQubeEnv('Sonar') {
+                    sh "${scannerHome}/bin/sonar-scanner"
+                }
+            }
+        }
 
         stage('Build') {
             steps {
